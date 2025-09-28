@@ -1,0 +1,35 @@
+{
+  "name": "rupal-coder",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:server": "nodemon --exec tsx src/backend/index.ts",
+    "dev:full": "concurrently -n CLIENT,SERVER -c cyan,magenta \"npm run dev\" \"npm run dev:server\"",
+    "start": "tsx src/backend/index.ts",
+    "build": "run-p type-check \"build-only {@}\" --",
+    "build-only": "vite build",
+    "preview": "vite preview",
+    "type-check": "vue-tsc --build",
+    "build:server": "tsc src/backend/index.ts --outDir dist --module commonjs --target es2020",
+    "serve": "node dist/backend/index.js"
+  },
+  "devDependencies": {
+    "@tsconfig/node22": "^22.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/dotenv": "^6.1.1",
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.18.6",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vue/tsconfig": "^0.7.0",
+    "concurrently": "^9.2.1",
+    "npm-run-all2": "^7.0.2",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
+    "typescript": "~5.7.3",
+    "vite": "^6.1.0",
+    "vite-plugin-vue-devtools": "^7.7.2",
+    "vue-tsc": "^2.2.2"
+  }
+}
