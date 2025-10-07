@@ -15,6 +15,16 @@
     "build:server": "tsc src/backend/index.ts --outDir dist --module commonjs --target es2020",
     "serve": "node dist/backend/index.js"
   },
+  "dependencies": {
+    "vue": "^3.3.0",
+    "vue-router": "^4.5.1",
+    "vuex": "^4.0.2",
+    "axios": "^1.12.2",
+    "express": "^5.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "mongoose": "^8.19.1"
+  },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.0",
     "@types/cors": "^2.8.19",
@@ -23,11 +33,7 @@
     "@types/node": "^22.18.8",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/tsconfig": "^0.7.0",
-    "axios": "^1.12.2",
     "concurrently": "^9.2.1",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.3",
-    "express": "^5.1.0",
     "nodemon": "^3.1.10",
     "npm-run-all2": "^7.0.2",
     "ts-node": "^10.9.2",
@@ -35,11 +41,6 @@
     "typescript": "~5.7.3",
     "vite": "^6.1.0",
     "vite-plugin-vue-devtools": "^7.7.2",
-    "vue-router": "^4.5.1",
-    "vue-tsc": "^2.2.2",
-    "vuex": "^4.0.2"
-  },
-  "dependencies": {
-    "mongoose": "^8.19.1"
+    "vue-tsc": "^2.2.2"
   }
 }
