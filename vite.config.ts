@@ -11,8 +11,14 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
-    sourcemap: false
+    sourcemap: false,
+    // Добавьте эти настройки
+    assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        manualChunks: undefined
+      }
+    }
   },
-  // Важно для Netlify
-  base: './'
+  base: '/'
 })
