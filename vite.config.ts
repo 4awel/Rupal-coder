@@ -9,15 +9,18 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
+  // Критически важно для Netlify:
+  base: '/',
   build: {
     outDir: 'dist',
-    sourcemap: false,
+    // Добавьте для лучшей совместимости
     assetsDir: 'assets',
     rollupOptions: {
       output: {
-        manualChunks: undefined
+        assetFileNames: 'assets/[name]-[hash][extname]',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js'
       }
     }
-  },
-  base: '/'
+  }
 })
