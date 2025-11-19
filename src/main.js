@@ -1,5 +1,9 @@
 import axios from 'axios';
+<<<<<<< HEAD
 axios.defaults.baseURL = "http://localhost:3005";
+=======
+axios.defaults.baseURL = import.meta.env.VITE_API_URL || "http://localhost:3005";
+>>>>>>> 67204052ba61bca53f2b8c573e821669311c1a3d
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router/router";
