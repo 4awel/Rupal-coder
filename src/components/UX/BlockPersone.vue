@@ -21,11 +21,11 @@
       </div>
     </div>
     <div class="container-team">
-      <h2>Команда</h2>
+      <h2 class="team-title">Команда</h2>
       <div class="team">
         <div v-for="(item, index) in personeTeamGroup" :key="index" class="team-card">
           <div class="photo">
-            <img :src="item.image" alt="photo" />
+            <img :src="item.image" :alt="item.name" />
           </div>
           <div class="description">
             <b>{{ item.name }}</b>
@@ -44,6 +44,8 @@ import competency20 from "@/assets/svg/competency-20.svg";
 import competency21 from "@/assets/svg/competency-21.svg";
 import competency22 from "@/assets/svg/competency-22.svg";
 
+// Для изображений используем require или публичные пути
+// Если изображения в public/img/
 import persone1 from "@/assets/img/IMG_2472_0.jpg";
 import persone2 from "@/assets/img/IMG_2474_1.jpg";
 import persone3 from "@/assets/img/IMG_2522_0.jpg";
@@ -85,28 +87,28 @@ export default defineComponent({
 
     const personeTeamGroup = [
       {
-        name: "Алексей Воробьев",
-        description: "Руководитель отдела веб-разработки",
+        name: "Сергей Синица",
+        description: "Руководитель отдела веб-разработки, канд. техн. наук, заместитель директора",
         image: persone1,
       },
       {
-        name: "Мария Иванова",
-        description: "Старший разработчик Drupal",
+        name: "Роман Агабеков",
+        description: "Руководитель отдела DevOPS, директор",
         image: persone2,
       },
       {
-        name: "Дмитрий Петров",
-        description: "Frontend разработчик",
+        name: "Алексей Синица",
+        description: "Руководитель отдела поддержки сайтов",
         image: persone3,
       },
       {
-        name: "Елена Сидорова",
-        description: "UX/UI дизайнер",
+        name: "Дария Бочкарева",
+        description: "Руководитель отдела продвижения, контекстной рекламы и контент поддержки сайтов",
         image: persone4,
       },
       {
-        name: "Сергей Козлов",
-        description: "Системный администратор",
+        name: "Ирина Торкунова",
+        description: "Менеджер по работе с клиентами",
         image: persone5,
       },
     ] as TeamType[];
@@ -121,8 +123,8 @@ export default defineComponent({
 
 <style scoped>
 .container-persone {
-  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
-  padding: 100px 0;
+  background: #ffffff;
+  padding: 80px 0;
   position: relative;
 }
 
@@ -134,9 +136,9 @@ export default defineComponent({
 }
 
 .container-our-persone h2 {
-  font-size: 36px;
+  font-size: 42px;
   font-weight: 700;
-  color: #2d3748;
+  color: #333333;
   margin-bottom: 60px;
   line-height: 1.3;
   width: 60%;
@@ -150,18 +152,20 @@ export default defineComponent({
 }
 
 .persone-info-item {
-  background: white;
-  border-radius: 20px;
+  background: #fafafa;
+  border-radius: 4px;
   padding: 40px 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  box-shadow: none;
+  border: 1px solid #eeeeee;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
 }
 
 .persone-info-item:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+  transform: none;
+  box-shadow: none;
+  border-color: #dddddd;
 }
 
 .svg {
@@ -198,7 +202,7 @@ export default defineComponent({
 .info h4 {
   font-size: 22px;
   font-weight: 600;
-  color: #f14d34;
+  color: #333333;
   margin-bottom: 15px;
   text-align: center;
 }
@@ -206,65 +210,63 @@ export default defineComponent({
 .info span {
   font-size: 16px;
   line-height: 1.6;
-  color: #4a5568;
+  color: #666666;
   text-align: center;
   display: block;
 }
 
+/* Блок "Команда" как на скриншоте */
 .container-team {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
-  text-align: center;
+  text-align: left;
 }
 
-.container-team h2 {
-  font-size: 36px;
+.team-title {
+  font-size: 42px;
   font-weight: 700;
-  color: #2d3748;
+  color: #333333;
   margin-bottom: 50px;
+  text-align: center;
 }
 
 .team {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 40px;
   margin-bottom: 50px;
 }
 
 .team-card {
-  background: white;
-  border-radius: 15px;
-  padding: 30px 20px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
+  background: #ffffff;
+  border-radius: 0;
+  padding: 0;
+  box-shadow: none;
+  transition: none;
   position: relative;
   overflow: hidden;
+  text-align: center;
+  border: none;
 }
 
 .team-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transform: none;
+  box-shadow: none;
 }
 
 .team-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #f14d34, #ff6b4a);
+  display: none;
 }
 
 .photo {
-  width: 120px;
-  height: 120px;
-  margin: 0 auto 20px auto;
-  border-radius: 50%;
+  width: 220px;
+  height: 220px;
+  margin: 0 auto 15px auto;
+  border-radius: 0%;
   overflow: hidden;
-  border: 4px solid #f8f9fa;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  border: none;
+  box-shadow: none;
 }
 
 .photo img {
@@ -275,52 +277,71 @@ export default defineComponent({
 
 .description b {
   display: block;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
-  color: #2d3748;
-  margin-bottom: 8px;
+  color: #333333;
+  margin-bottom: 5px;
+  line-height: 1.3;
 }
 
 .description span {
   font-size: 14px;
-  color: #718096;
-  line-height: 1.5;
+  color: #888888;
+  line-height: 1.4;
+  display: block;
 }
 
 .btn-team {
-  background: linear-gradient(135deg, #f14d34, #ff6b4a);
-  color: white;
-  border: none;
-  padding: 15px 40px;
-  border-radius: 30px;
+  background-colour: #000000;
+  color: #575656ff;
+  border: 1px solid #dddddd;
+  padding: 12px 35px;
+  border-radius: 4px;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 5px 15px rgba(241, 77, 52, 0.3);
+  display: block;
+  margin: 50px auto 0 auto;
+  text-align: center;
+  box-shadow: none;
 }
 
 .btn-team:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(241, 77, 52, 0.4);
-  background: linear-gradient(135deg, #e0452d, #ff5a3d);
+  background: #e6e6e6;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Адаптивность */
+@media (max-width: 1024px) {
+  .team {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+  }
+  
+  .container-our-persone h2,
+  .team-title {
+    font-size: 36px;
+  }
+}
+
 @media (max-width: 768px) {
   .container-persone {
     padding: 60px 0;
   }
   
   .container-our-persone h2,
-  .container-team h2 {
+  .team-title {
     font-size: 28px;
     margin-bottom: 40px;
+    width: 100%;
+    text-align: center;
   }
   
   .persone-info-group {
     grid-template-columns: 1fr;
-    gap: 30px;
+    gap: 20px;
     margin-top: 40px;
   }
   
@@ -329,39 +350,54 @@ export default defineComponent({
   }
   
   .team {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
   }
   
   .photo {
     width: 100px;
     height: 100px;
   }
+  
+  .btn-team {
+    margin-top: 40px;
+  }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 576px) {
   .container-persone {
     padding: 40px 0;
   }
   
   .container-our-persone h2,
-  .container-team h2 {
+  .team-title {
     font-size: 24px;
     margin-bottom: 30px;
   }
   
   .persone-info-group {
-    gap: 20px;
+    gap: 15px;
   }
   
   .team {
     grid-template-columns: 1fr;
-    gap: 15px;
+    gap: 20px;
+    max-width: 300px;
+    margin: 0 auto 30px auto;
   }
   
   .btn-team {
-    padding: 12px 30px;
+    padding: 10px 25px;
     font-size: 14px;
+    margin-top: 30px;
+  }
+  
+  .description b {
+    font-size: 15px;
+  }
+  
+  .description span {
+    font-size: 13px;
   }
 }
 </style>
