@@ -96,7 +96,7 @@ export default defineComponent({
 .header-about-wrapper {
   position: relative;
   z-index: 4;
-  margin-bottom: -300px;
+  margin-bottom: -400px;
 }
 
 .about-info-wrapper {

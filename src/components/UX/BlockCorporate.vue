@@ -6,7 +6,7 @@
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Quasi rerum
         dolor quidem. Repudiandae culpa sint tenetur laborum quas, officia vel
         dolorum doloremque, suscipit necessitatibus nostrum quos rerum ipsum.
-        Necessitatibus, ratione?
+        Necessitatibus, ratione? <span>Hellow world!</span>
       </p>
     </div>
     <div class="group-scroll-partners">

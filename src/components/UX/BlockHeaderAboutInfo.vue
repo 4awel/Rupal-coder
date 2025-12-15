@@ -8,7 +8,9 @@
           <h3 class="item-title">{{ item.title }}</h3>
           <span class="item-info">{{ item.description }}</span>
         </div>
-        <img class="item-image" :src="item.image" :alt="'support-svg-' + index" />
+        <div class="container-image">
+          <img class="item-image" :src="item.image" :alt="'support-svg-' + index" />
+        </div>
       </div>
     </div>
   </div>
@@ -87,10 +89,14 @@ export default defineComponent({
 <style scoped>
 .container-support {
   max-width: 1200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
   margin: 0 auto;
   padding: 80px 20px;
   border-radius: 10px;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  /* background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); */
 }
 
 .container-support h2 {
@@ -116,20 +122,27 @@ export default defineComponent({
 
 .group-item-support {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 40px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
 }
 
 .item-support {
   display: flex;
   align-items: flex-start;
   background: #ffffff;
-  padding: 30px;
-  border-radius: 15px;
+  height: auto;
+  width: 340px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  flex-direction: column;
+}
+
+.container-image {
+  display: flex;
+  width: 100%;
+  justify-content: end;
 }
 
 .item-support::before {
@@ -172,6 +185,9 @@ export default defineComponent({
 .text-support {
   flex: 1;
   margin-right: 20px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
 }
 
 .item-title {
@@ -183,16 +199,17 @@ export default defineComponent({
 }
 
 .item-info {
-  font-size: 14px;
+  font-size: 16px;
   color: #6c757d;
   line-height: 1.6;
   display: block;
 }
 
 .item-image {
-  width: 60px;
-  height: 60px;
+  width: 100px;
+  height: 100px;
   object-fit: contain;
+  display: flex;
   flex-shrink: 0;
   transition: transform 0.3s ease;
 }
