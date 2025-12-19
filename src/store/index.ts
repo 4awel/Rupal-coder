@@ -14,6 +14,7 @@ export interface FormStateType {
   error: string | null;
   success: boolean;
   forms: Forms_DataType[];
+  isOpenModal: boolean;
 }
 
 export interface FormDataType {
@@ -30,13 +31,14 @@ export default createStore({
     isSubmitted: false,
     error: null,
     success: false,
+    isOpenModal: false,
 
     forms: [],
   }),
 
   mutations: {
     SET_LOADING(state: any, payload: boolean) {
-      state.isLoading = payload;
+      state.isOpenModal = payload;
     },
 
     SET_SUBMITTED(state: any, payload: boolean) {
@@ -49,6 +51,10 @@ export default createStore({
 
     SET_SUCCESS(state: any, payload: boolean) {
       state.success = payload;
+    },
+
+    SET_MODAL(state: any, payload: boolean) {
+      state.isOpenModal = payload;
     },
 
     RESET_FORM(state: any) {
@@ -121,5 +127,6 @@ export default createStore({
     formError: (state: any) => state.error,
     formSuccess: (state: any) => state.success,
     forms: (state: any) => state.forms,
+    isOpenModal: (state: any) => {return state.isOpenModal},
   },
 });

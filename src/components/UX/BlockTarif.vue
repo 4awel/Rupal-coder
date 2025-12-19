@@ -25,8 +25,8 @@
             </div>
           </div>
           <div class="tarif-button">
-            <ButtonTypeBould style="width: 100%;" v-if="item.isMain">СВЯЖИТЕСЬ С НАМИ!</ButtonTypeBould>
-            <ButtonTypeOpasyti style="width: 100%;" v-else>СВЯЖИТЕСЬ С НАМИ!</ButtonTypeOpasyti>
+            <ButtonTypeBould @click="openModalActive" style="width: 100%;" v-if="item.isMain">СВЯЖИТЕСЬ С НАМИ!</ButtonTypeBould>
+            <ButtonTypeOpasyti @click="openModalActive"  style="width: 100%;" v-else>СВЯЖИТЕСЬ С НАМИ!</ButtonTypeOpasyti>
           </div>
         </div>
       </div>
@@ -42,7 +42,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-
+import { useStore } from "vuex";
 interface ContentType {
   text: string;
 }
@@ -58,6 +58,10 @@ interface ComponentType {
 export default defineComponent({
   name: "BlockTarif",
   setup() {
+    const store = useStore();
+    const openModalActive = () => {
+      store.commit("SET_MODAL_OPEN", true);
+    }
     const tarifComponents: ComponentType[] = [
       {
         title: "Стартовый",
@@ -94,7 +98,8 @@ export default defineComponent({
     ];
 
     return {
-      tarifComponents
+      tarifComponents,
+      openModalActive
     };
   },
 });

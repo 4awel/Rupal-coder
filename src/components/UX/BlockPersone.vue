@@ -152,11 +152,11 @@ export default defineComponent({
 }
 
 .persone-info-item {
-  background: #fafafa;
+  /* background: #fafafa; */
   border-radius: 4px;
   padding: 40px 30px;
   box-shadow: none;
-  border: 1px solid #eeeeee;
+  /* border: 1px solid #eeeeee; */
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;

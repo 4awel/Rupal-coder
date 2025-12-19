@@ -9,6 +9,7 @@ import BlockPersone from "./BlockPersone.vue";
 import BlockServisec from "./BlockServisec.vue";
 import BlockSupportInfo from "./BlockSupportInfo.vue";
 import BlockTarif from "./BlockTarif.vue";
+import MaodalPowpap from "./MaodalPowpap.vue";
 
 
 export default [
@@ -22,5 +23,6 @@ export default [
     BlockPersone,
     BlockSupportInfo,
     BlockTarif,
-    BlockServisec
+    BlockServisec,
+    MaodalPowpap
 ];

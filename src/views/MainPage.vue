@@ -1,6 +1,9 @@
 <template>
   <main class="main-container">
     <BlockSupportInfo />
+    <div class="pow-pap">
+      <maodal-powpap />
+    </div>
     <div class="dividing-overlay-block">
       <BlockServisec />
       <div class="header-about-wrapper">
@@ -17,16 +20,22 @@
       <BlockFAQ />
       <BlockForm />
     </div>
-    
+
     <!-- Кнопка "Наверх" -->
-    <button 
-      class="scroll-to-top-btn" 
-      :class="{ 'visible': isScrollButtonVisible }"
+    <button
+      class="scroll-to-top-btn"
+      :class="{ visible: isScrollButtonVisible }"
       @click="scrollToTop"
       aria-label="Вернуться наверх"
     >
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-        <path d="M12 20V4M12 4L5 11M12 4L19 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path
+          d="M12 20V4M12 4L5 11M12 4L19 11"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
       </svg>
     </button>
   </main>
@@ -34,8 +43,10 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, onUnmounted } from "vue";
+import MaodalPowpap from "../components/UX/MaodalPowpap.vue";
 
 export default defineComponent({
+  components: { MaodalPowpap },
   name: "MainPage",
   setup() {
     const isScrollButtonVisible = ref(false);
@@ -48,7 +59,7 @@ export default defineComponent({
     const scrollToTop = () => {
       window.scrollTo({
         top: 0,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     };
 
@@ -57,17 +68,17 @@ export default defineComponent({
     };
 
     onMounted(() => {
-      window.addEventListener('scroll', handleScroll);
+      window.addEventListener("scroll", handleScroll);
       checkScrollPosition(); // Проверяем при загрузке
     });
 
     onUnmounted(() => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     });
 
     return {
       isScrollButtonVisible,
-      scrollToTop
+      scrollToTop,
     };
   },
 });
@@ -177,7 +188,7 @@ export default defineComponent({
     width: 40px;
     height: 40px;
   }
-  
+
   .scroll-to-top-btn svg {
     width: 18px;
     height: 18px;
@@ -199,7 +210,7 @@ export default defineComponent({
   .dividing-overlay-block {
     padding: 10% 15%;
   }
-  
+
   .header-about-wrapper {
     margin-bottom: -200px;
   }
