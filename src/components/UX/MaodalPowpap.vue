@@ -3,11 +3,11 @@
     <!-- <button @click="showModal = true" class="open-modal-btn">KKKKKKKK</button> -->
 
     <!-- Модальное окно -->
-    <div v-if="isOpen" class="modal-overlay">
+    <div v-if="isOpen" class="modal-overlay" @click.self="closeModal">
       <div class="modal-container">
         <div class="modal-header">
           <h3 class="modal-title">Оставить заявку на поддержку сайта</h3>
-          <button class="modal-close-btn">&times;</button>
+          <button @click="closeModal" class="modal-close-btn">&times;</button>
         </div>
 
         <div class="modal-content">
@@ -136,15 +136,19 @@ export default defineComponent({
     const store = useStore();
     const showModal = computed(() => store.getters.isOpenModal);
     const isOpen = ref(false);
-    const isLoading = ref(false);
-    const success = ref(false);
-    const error = ref<string | null>(null);
+    const isLoading = computed(() => store.getters.isFormLoading);
+    const success = computed(() => store.getters.formSuccess);
+    const error = computed(() => store.getters.formError);
     console.log(showModal.value);
 
     watch(showModal, (newValue) => {
         isOpen.value = newValue;
         console.log(newValue)
-    })
+    });
+
+    const closeModal = () => {
+      store.commit("SET_OPEN", false);
+    } 
 
 
     const formData = reactive<FormData>({
@@ -176,56 +180,28 @@ export default defineComponent({
       "form-error": error.value,
     }));
 
-    // const openModal = () => {
-    //   showModal.value = true;
-    //   document.body.style.overflow = "hidden";
-    // };
-
-    // const closeModal = () => {
-    //   showModal.value = false;
-    //   document.body.style.overflow = "auto";
-    //   resetForm();
-    // };
-
     const handleSubmit = async () => {
-      if (!isFormValid.value) {
-        error.value = "Пожалуйста, заполните все обязательные поля";
-        return;
-      }
-
-      isLoading.value = true;
-      error.value = null;
-
       try {
-        // Имитация отправки на сервер
-        await new Promise((resolve) => setTimeout(resolve, 1500));
+        await store.dispatch("submitForm", formData);
 
-        // Здесь должна быть реальная отправка данных
-        console.log("Отправка формы:", formData);
-
-        success.value = true;
+        // Очистка формы после успешной отправки
+        Object.assign(formData, {
+          name: "",
+          phone: "",
+          email: "",
+          comment: "",
+        });
       } catch (err) {
-        error.value =
-          "Произошла ошибка при отправке формы. Попробуйте еще раз.";
-      } finally {
-        isLoading.value = false;
+        console.log(err);
       }
     };
 
     const resetForm = () => {
-      Object.assign(formData, {
-        name: "",
-        phone: "",
-        email: "",
-        comment: "",
-        agree: false,
-      });
-      success.value = false;
-      error.value = null;
+      store.dispatch("resetForm");
     };
 
     const clearError = () => {
-      error.value = null;
+      store.commit("SET_ERROR", null);
     };
 
     return {
@@ -236,20 +212,19 @@ export default defineComponent({
       error,
       isFormValid,
       formClasses,
-    //   openModal,
-    //   closeModal,
       handleSubmit,
       resetForm,
       clearError,
-      isOpen
+      isOpen,
+      closeModal
     };
   },
   mounted() {
-    // document.addEventListener("keydown", (e) => {
-    //   if (e.key === "Escape" && this.showModal) {
-    //     this.closeModal();
-    //   }
-    // });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && this.showModal) {
+        this.closeModal();
+      }
+    });
   },
   beforeUnmount() {
     document.removeEventListener("keydown", () => {});

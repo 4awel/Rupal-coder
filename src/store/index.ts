@@ -38,7 +38,7 @@ export default createStore({
 
   mutations: {
     SET_LOADING(state: any, payload: boolean) {
-      state.isOpenModal = payload;
+      state.isLoading = payload;
     },
 
     SET_SUBMITTED(state: any, payload: boolean) {
@@ -53,7 +53,7 @@ export default createStore({
       state.success = payload;
     },
 
-    SET_MODAL(state: any, payload: boolean) {
+    SET_OPEN(state: any, payload: boolean) {
       state.isOpenModal = payload;
     },
 
@@ -127,6 +127,6 @@ export default createStore({
     formError: (state: any) => state.error,
     formSuccess: (state: any) => state.success,
     forms: (state: any) => state.forms,
-    isOpenModal: (state: any) => {return state.isOpenModal},
+    isOpenModal: (state: any) => state.isOpenModal,
   },
 });

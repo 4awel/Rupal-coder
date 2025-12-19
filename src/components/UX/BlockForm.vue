@@ -22,7 +22,7 @@
       </div>
     </div>
     <div class="form">
-      <form @submit.prevent="handleSubmit" class="contact-form" :class="formClasses">
+      <form id="form" @submit.prevent="handleSubmit" class="contact-form smooth-scroll" :class="formClasses">
         <!-- Overlay загрузки -->
         <div v-if="isLoading" class="form-overlay">
           <div class="spinner"></div>
@@ -224,6 +224,10 @@ export default defineComponent({
   padding: 100px 0;
   position: relative;
   justify-content: center;
+}
+
+.smooth-scroll {
+  scroll-behavior: smooth;
 }
 
 .form-info {

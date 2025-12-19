@@ -1,47 +1,62 @@
 <template>
-  <div class="container-tarif">
+  <div id="tarif" class="container-tarif">
     <div class="svg-overlay">
       <img src="../../assets/img/image.png" alt="overlay-drupal" />
     </div>
     <div class="container">
       <h2>Тарифы</h2>
       <div class="tarifs">
-        <div 
-          v-for="(item, index) in tarifComponents" 
-          :key="index" 
+        <div
+          v-for="(item, index) in tarifComponents"
+          :key="index"
           :class="{
             'tarif-item': true,
             'tarif-item--main': item.isMain,
-            'tarif-item--secondary': !item.isMain
+            'tarif-item--secondary': !item.isMain,
           }"
         >
           <div v-if="item.isMain" class="tarif-badge">Популярный</div>
           <h4>{{ item.title }}</h4>
           <hr />
           <div class="tarif-features">
-            <div v-for="(comp, featureIndex) in item.content" :key="featureIndex" class="feature-item">
+            <div
+              v-for="(comp, featureIndex) in item.content"
+              :key="featureIndex"
+              class="feature-item"
+            >
               <span class="feature-icon">✓</span>
               <span class="feature-text">{{ comp.text }}</span>
             </div>
           </div>
           <div class="tarif-button">
-            <ButtonTypeBould @click="openModalActive" style="width: 100%;" v-if="item.isMain">СВЯЖИТЕСЬ С НАМИ!</ButtonTypeBould>
-            <ButtonTypeOpasyti @click="openModalActive"  style="width: 100%;" v-else>СВЯЖИТЕСЬ С НАМИ!</ButtonTypeOpasyti>
+            <ButtonTypeBould
+              @click="openModalActive"
+              style="width: 100%"
+              v-if="item.isMain"
+              >СВЯЖИТЕСЬ С НАМИ!</ButtonTypeBould
+            >
+            <ButtonTypeOpasyti
+              @click="openModalActive"
+              style="width: 100%"
+              v-else
+              >СВЯЖИТЕСЬ С НАМИ!</ButtonTypeOpasyti
+            >
           </div>
         </div>
       </div>
       <div class="tarif-info">
         <span class="info-text">
-          Вам не подходят наши тарифы? Оставьте заявку и мы предложим вам индивидуальные условия!
+          Вам не подходят наши тарифы? Оставьте заявку и мы предложим вам
+          индивидуальные условия!
         </span>
-        <a href="#" class="info-link">ПОЛУЧИТЬ ИНДИВИДУАЛЬНЫЙ ТАРИФ</a>
+        <a href="#form" class="info-link smooth-scroll">ПОЛУЧИТЬ ИНДИВИДУАЛЬНЫЙ ТАРИФ</a>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { computed, defineComponent, onMounted } from "vue";
 import { useStore } from "vuex";
 interface ContentType {
   text: string;
@@ -60,7 +75,7 @@ export default defineComponent({
   setup() {
     const store = useStore();
     const openModalActive = () => {
-      store.commit("SET_MODAL_OPEN", true);
+      store.commit("SET_OPEN", true);
     }
     const tarifComponents: ComponentType[] = [
       {
@@ -99,14 +114,13 @@ export default defineComponent({
 
     return {
       tarifComponents,
-      openModalActive
+      openModalActive,
     };
   },
 });
 </script>
 
 <style scoped>
-
 .container-tarif {
   position: relative;
   background: linear-gradient(135deg, #ffffff 0%, #afafaf 100%);
@@ -115,6 +129,10 @@ export default defineComponent({
   display: flex;
   align-items: center;
   z-index: 1; /* Добавляем явный z-index */
+}
+
+.smooth-scroll {
+  scroll-behavior: smooth;
 }
 
 .svg-overlay {
@@ -315,44 +333,44 @@ export default defineComponent({
   .container-tarif {
     padding: 300px 0;
   }
-  
+
   .container h2 {
     font-size: 2.2rem;
     margin-bottom: 100px;
   }
-  
+
   .tarifs {
     grid-template-columns: 1fr;
     gap: 25px;
     margin-bottom: 40px;
   }
-  
+
   .tarif-item {
     padding: 30px 20px;
   }
-  
+
   .tarif-item--main {
     transform: none;
     order: -1;
   }
-  
+
   .tarif-item:hover,
   .tarif-item--main:hover {
     transform: translateY(-5px);
   }
-  
+
   .price {
     font-size: 2rem;
   }
-  
+
   .tarif-info {
     padding: 30px 20px;
   }
-  
+
   .info-text {
     font-size: 1.1rem;
   }
-  
+
   .info-link {
     padding: 12px 30px;
     font-size: 0.9rem;
@@ -363,19 +381,19 @@ export default defineComponent({
   .container {
     padding: 0 15px;
   }
-  
+
   .container h2 {
     font-size: 1.8rem;
   }
-  
+
   .tarif-item h4 {
     font-size: 1.5rem;
   }
-  
+
   .price {
     font-size: 1.8rem;
   }
-  
+
   .feature-text {
     font-size: 0.9rem;
   }
