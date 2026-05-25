@@ -16,6 +16,7 @@ const server = http.createServer(async (req, res) => {
     res.setHeader("Content-Type", "application/json");
     res.end(JSON.stringify({ error: "Внутренняя ошибка сервера" }));
   }
+  console.log('Server...');
 });
 
 async function startServer() {
