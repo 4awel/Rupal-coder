@@ -19,13 +19,30 @@ export default defineComponent({
       try {
         console.log("Начинаем загрузку форм...");
         await store.dispatch("getFormsData");
-        console.log("Формы успешно загружены:", store.getters.forms);
+        const forms = store.getters.forms;
+        console.log("Формы загружены:", forms?.length || 0, "форм");
       } catch (error) {
         console.error("Ошибка загрузки форм:", error);
       }
     };
+
+    const initializeApp = async () => {
+      try {
+        // Инициализируем auth модуль
+        await store.dispatch("auth/initialize");
+
+        const isAuthenticated = store.getters["auth/isAuthenticated"];
+        console.log("Auth initialized, isAuthenticated:", isAuthenticated);
+
+        // Загружаем формы (будут взяты из кэша если есть)
+        await loadForms();
+      } catch (error) {
+        console.error("Ошибка инициализации:", error);
+      }
+    };
+
     onMounted(() => {
-      loadForms();
+      initializeApp();
     });
   },
 });

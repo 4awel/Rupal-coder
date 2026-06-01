@@ -18,8 +18,10 @@
         <span
           >Сопровождение и поддержка сайтов на CMS Drupal любых версий и
           запущенности</span
-        >
-        <ButtonTypeOpasyti>Тарифы</ButtonTypeOpasyti>
+          >
+          <a href="#tarif" class="btn-a">
+            <ButtonTypeOpasyti>Тарифы</ButtonTypeOpasyti>
+          </a>
       </div>
       <div class="block-group">
         <div v-for="(item, index) in groupItem" :key="index" class="item">
@@ -260,6 +262,15 @@ export default defineComponent({
     width: 100%;
     max-width: 1000px;
     gap: 30px;
+  }
+
+  .btn-a {
+    text-decoration: none;
+    color: #f14d34;
+  }
+
+  .btn-a:hover {
+    color: #050c33;
   }
 
   .item {

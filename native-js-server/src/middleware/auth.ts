@@ -17,14 +17,19 @@ export async function authenticate(
   const credentials = Buffer.from(base64Credentials, "base64").toString(
     "utf-8",
   );
-  const [login, password] = credentials.split(":");
+  const [loginOrPhone, password] = credentials.split(":");
 
-  if (!login || !password) {
+  if (!loginOrPhone || !password) {
     sendJSON(res, 401, { error: "Неверные учетные данные" });
     return null;
   }
 
-  const user = await User.findOne({ login });
+  // Ищем пользователя по логину или телефону
+  let user = await User.findOne({ login: loginOrPhone });
+
+  if (!user) {
+    user = await User.findOne({ phone: loginOrPhone });
+  }
 
   if (!user) {
     sendJSON(res, 401, { error: "Пользователь не найден" });

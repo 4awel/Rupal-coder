@@ -1,9 +1,5 @@
 import { IncomingMessage, ServerResponse } from "http";
 import { User } from "../models/User";
-import {
-  validateUserData,
-  generateLoginAndPassword,
-} from "../utils/validators";
 import { sendJSON, sendXML, parseBody } from "../utils/response";
 import { authenticate } from "../middleware/auth";
 
@@ -14,6 +10,8 @@ export async function handleCreateUser(
   try {
     const body = await parseBody(req);
     let userData: any = body;
+
+    console.log("Received user data:", userData);
 
     // Парсим XML если нужно
     if (body.rawXml) {
@@ -28,72 +26,98 @@ export async function handleCreateUser(
       });
     }
 
-    // Валидация
-    const validation = validateUserData(userData);
-    if (!validation.isValid) {
-      const acceptHeader = req.headers.accept || "";
-      if (acceptHeader.includes("application/xml")) {
-        sendXML(res, 400, { error: validation.errors.join(", ") });
-      } else {
-        sendJSON(res, 400, { errors: validation.errors });
-      }
+    // 🔧 Маппинг полей из фронтенда в серверные поля
+    const mappedData = {
+      name: userData.fullName || userData.name,
+      phone: userData.phone,
+      email: userData.email,
+      birthDate: userData.birthDate,
+      gender: userData.gender,
+      favoriteLanguages: userData.favoriteLanguages || [],
+      biography: userData.biography,
+      comment: userData.comment || userData.biography,
+      login: userData.login || userData.phone || userData.email,
+      password: userData.password,
+    };
+
+    console.log("Mapped user data:", mappedData);
+
+    // Валидация обязательных полей
+    if (
+      !mappedData.name ||
+      !mappedData.phone ||
+      !mappedData.email ||
+      !mappedData.password
+    ) {
+      sendJSON(res, 400, {
+        error: "Обязательные поля: ФИО, телефон, email, пароль",
+        received: {
+          name: !!mappedData.name,
+          phone: !!mappedData.phone,
+          email: !!mappedData.email,
+          password: !!mappedData.password,
+        },
+      });
       return;
     }
 
-    // 🔧 Проверка email
-    const existingUser = await User.findOne({ email: userData.email });
-    if (existingUser) {
-      sendJSON(res, 400, { error: "Email уже зарегистрирован" });
-      return;
-    }
-
-    // 🔧 Логин: либо пользовательский, либо из email
-    let login = userData.login;
-    if (!login) {
-      login = userData.email; // Используем email как логин
-    }
-    
-    // Проверка уникальности логина
-    const existingLogin = await User.findOne({ login });
-    if (existingLogin) {
-      sendJSON(res, 400, { error: "Логин уже занят" });
-      return;
-    }
-
-    // 🔧 Пароль
-    let password = userData.password;
-    if (!password) {
-      // Генерируем временный пароль
-      password = Math.random().toString(36).substring(2, 12) + 
-                 Math.random().toString(36).substring(2, 12);
-    } else if (password.length < 6) {
+    if (mappedData.password.length < 6) {
       sendJSON(res, 400, {
         error: "Пароль должен содержать минимум 6 символов",
       });
       return;
     }
 
+    // Проверка email
+    const existingEmail = await User.findOne({ email: mappedData.email });
+    if (existingEmail) {
+      sendJSON(res, 400, { error: "Email уже зарегистрирован" });
+      return;
+    }
+
+    // Проверка телефона
+    const existingPhone = await User.findOne({ phone: mappedData.phone });
+    if (existingPhone) {
+      sendJSON(res, 400, { error: "Телефон уже зарегистрирован" });
+      return;
+    }
+
+    // Генерация уникального логина
+    let login = mappedData.login;
+    let counter = 1;
+    let existingLogin = await User.findOne({ login });
+    while (existingLogin) {
+      login = `${mappedData.login}_${counter}`;
+      existingLogin = await User.findOne({ login });
+      counter++;
+    }
+
     console.log("Creating user with login:", login);
 
+    // Создаем пользователя со всеми полями
     const user = new User({
-      name: userData.name,
-      phone: userData.phone,
-      email: userData.email,
-      comment: userData.comment,
+      name: mappedData.name,
+      phone: mappedData.phone,
+      email: mappedData.email,
+      birthDate: mappedData.birthDate || "",
+      gender: mappedData.gender || "",
+      favoriteLanguages: mappedData.favoriteLanguages || [],
+      biography: mappedData.biography || "",
+      comment: mappedData.comment || "",
       login: login,
-      password: password,
+      password: mappedData.password,
     });
 
     await user.save();
 
-    // 🔧 Токен для автоматического входа после регистрации
-    const token = Buffer.from(`${login}:${password}`).toString("base64");
+    // Токен для автоматического входа
+    const token = Buffer.from(`${login}:${mappedData.password}`).toString(
+      "base64",
+    );
 
     const responseData = {
       message: "Пользователь успешно создан",
       login: login,
-      password: password,
-      profileUrl: `/profile/${user._id}`,
       userId: user._id,
       token: token,
       user: {
@@ -101,7 +125,10 @@ export async function handleCreateUser(
         name: user.name,
         phone: user.phone,
         email: user.email,
-        comment: user.comment,
+        birthDate: user.birthDate,
+        gender: user.gender,
+        favoriteLanguages: user.favoriteLanguages,
+        biography: user.biography,
         login: login,
       },
     };
@@ -114,9 +141,12 @@ export async function handleCreateUser(
     }
   } catch (error) {
     console.error("Create user error:", error);
-    sendJSON(res, 500, { error: "Внутренняя ошибка сервера" });
+    sendJSON(res, 500, {
+      error: "Внутренняя ошибка сервера: " + (error as Error).message,
+    });
   }
 }
+
 // Обновление пользователя
 export async function handleUpdateUser(
   req: IncomingMessage,
@@ -149,20 +179,34 @@ export async function handleUpdateUser(
       });
     }
 
-    delete updateData.login;
-    delete updateData.password;
-    delete updateData._id;
-    delete updateData.createdAt;
+    // Маппинг полей для обновления
+    const mappedUpdate = {
+      name: updateData.fullName || updateData.name,
+      phone: updateData.phone,
+      email: updateData.email,
+      birthDate: updateData.birthDate,
+      gender: updateData.gender,
+      favoriteLanguages: updateData.favoriteLanguages,
+      biography: updateData.biography,
+      comment: updateData.comment || updateData.biography,
+    };
 
-    const validation = validateUserData(updateData);
-    if (!validation.isValid) {
-      sendJSON(res, 400, { errors: validation.errors });
-      return;
-    }
+    // Удаляем undefined поля
+    Object.keys(mappedUpdate).forEach((key) => {
+      if (mappedUpdate[key] === undefined) {
+        delete mappedUpdate[key];
+      }
+    });
 
-    if (updateData.email && updateData.email !== user.email) {
+    delete mappedUpdate.login;
+    delete mappedUpdate.password;
+    delete mappedUpdate._id;
+    delete mappedUpdate.createdAt;
+
+    // Проверка email при обновлении
+    if (mappedUpdate.email && mappedUpdate.email !== user.email) {
       const existingUser = await User.findOne({
-        email: updateData.email,
+        email: mappedUpdate.email,
         _id: { $ne: user._id },
       });
       if (existingUser) {
@@ -173,29 +217,35 @@ export async function handleUpdateUser(
       }
     }
 
+    // Проверка телефона при обновлении
+    if (mappedUpdate.phone && mappedUpdate.phone !== user.phone) {
+      const existingUser = await User.findOne({
+        phone: mappedUpdate.phone,
+        _id: { $ne: user._id },
+      });
+      if (existingUser) {
+        sendJSON(res, 400, {
+          error: "Телефон уже используется другим пользователем",
+        });
+        return;
+      }
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { ...updateData, updatedAt: new Date() },
+      { ...mappedUpdate, updatedAt: new Date() },
       { new: true, runValidators: true },
-    );
+    ).select("-password");
 
     if (!updatedUser) {
       sendJSON(res, 404, { error: "Пользователь не найден" });
       return;
     }
 
-    const responseData = {
+    sendJSON(res, 200, {
       message: "Данные пользователя обновлены",
-      user: {
-        name: updatedUser.name,
-        phone: updatedUser.phone,
-        email: updatedUser.email,
-        comment: updatedUser.comment,
-        updatedAt: updatedUser.updatedAt,
-      },
-    };
-
-    sendJSON(res, 200, responseData);
+      user: updatedUser,
+    });
   } catch (error) {
     console.error("Update user error:", error);
     sendJSON(res, 500, { error: "Внутренняя ошибка сервера" });
@@ -228,56 +278,82 @@ export async function handleGetUser(
   }
 }
 
-// Логин пользователя
+// Логин пользователя (поддержка входа по phone или email)
+// controllers/userController.ts - ПОЛНОСТЬЮ ИСПРАВЛЕННАЯ ВЕРСИЯ
+
 export async function handleLogin(
   req: IncomingMessage,
   res: ServerResponse,
 ): Promise<void> {
   try {
     const body = await parseBody(req);
-    let { login, password } = body;
+    let { login, password, phone, email } = body;
 
-    console.log("Login attempt:", { login, password: password });
+    console.log("=== LOGIN ATTEMPT ===");
+    console.log("Received:", { login, phone, email, hasPassword: !!password });
 
-    // Поддержка как JSON, так и XML
-    if (body.rawXml) {
-      const xml2js = await import("xml2js");
-      const parser = new xml2js.Parser();
-      const parsed = await parser.parseStringPromise(body.rawXml);
-      login = parsed.login?.[0] || parsed.root?.login?.[0];
-      password = parsed.password?.[0] || parsed.root?.password?.[0];
-    }
-
-    if (!login || !password) {
-      sendJSON(res, 400, { error: "Логин и пароль обязательны" });
+    // Проверка наличия пароля
+    if (!password) {
+      sendJSON(res, 400, { error: "Пароль обязателен" });
       return;
     }
 
-    // Ищем пользователя по логину
-    const user = await User.findOne({ login });
+    // Проверка наличия идентификатора
+    if (!login && !phone && !email) {
+      sendJSON(res, 400, { error: "Укажите логин, телефон или email" });
+      return;
+    }
+
+    // Поиск пользователя
+    let user = null;
+
+    // Поиск по логину
+    if (login) {
+      user = await User.findOne({ login });
+      if (user) console.log("Found by login:", user.login);
+    }
+
+    // Поиск по телефону (если не нашли по логину)
+    if (!user && phone) {
+      user = await User.findOne({ phone });
+      if (user) console.log("Found by phone:", user.phone);
+    }
+
+    // Поиск по email (если не нашли по телефону)
+    if (!user && email) {
+      user = await User.findOne({ email });
+      if (user) console.log("Found by email:", user.email);
+    }
 
     if (!user) {
-      console.log("User not found:", login);
-      sendJSON(res, 401, { error: "Неверный логин или пароль" });
+      console.log("User NOT FOUND");
+      sendJSON(res, 401, { error: "Неверный логин/телефон/email или пароль" });
       return;
     }
 
-    // Проверяем пароль
+    console.log("User found:", {
+      login: user.login,
+      phone: user.phone,
+      email: user.email,
+    });
+
+    // ✅ КРИТИЧЕСКИ ВАЖНО: Проверяем пароль
     const isPasswordValid = await user.comparePassword(password);
+    console.log("Password valid:", isPasswordValid);
 
     if (!isPasswordValid) {
-      console.log("Invalid password for user:", login);
-      sendJSON(res, 401, { error: "Неверный логин или пароль" });
+      console.log("❌ Invalid password for user:", user.login);
+      sendJSON(res, 401, { error: "Неверный логин/телефон/email или пароль" });
       return;
     }
 
-    // Генерируем токен (Basic auth)
-    const token = Buffer.from(`${login}:${password}`).toString("base64");
+    // Генерируем токен
+    const token = Buffer.from(`${user.login}:${password}`).toString("base64");
 
     const userData = user.toObject();
     delete userData.password;
 
-    console.log("Login successful:", login);
+    console.log("✅ Login successful for user:", user.login);
 
     sendJSON(res, 200, {
       message: "Успешный вход",
@@ -300,7 +376,6 @@ export async function handleGetAllUsers(
   try {
     const users = await User.find().select("-password");
 
-    // Поддержка XML если нужно
     const acceptHeader = req.headers.accept || "";
     if (acceptHeader.includes("application/xml")) {
       sendXML(res, 200, { users: users.map((u) => u.toObject()) });
