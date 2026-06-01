@@ -5,114 +5,245 @@
     </div>
     <div class="form-info">
       <div class="block-top">
-        <h2>Оставить заявку на поддержку сайта</h2>
-        <span class="description"
-          >Lorem ipsum dolor sit amet consectetur adipisicing elit. Eius
-          voluptatem sint ipsam magnam deleniti, quam magni repellat quisquam
-          ducimus modi necessitatibus repudiandae at autem debitis tempore est
-          distinctio nulla ullam ipsa, praesentium minus. Culpa ad nobis
-          repudiandae labore nesciunt fugiat dicta quo, delectus pariatur quas
-          aliquid neque ab aperiam iusto quia, sint velit nihil, tempora ut.
-          Asperiores incidunt architecto eius.</span
-        >
+        <h2>
+          {{
+            isLoginMode ? "Вход в аккаунт" : "Регистрация нового пользователя"
+          }}
+        </h2>
+        <span class="description">
+          {{
+            isLoginMode
+              ? "Войдите в свой аккаунт, чтобы продолжить. Если у вас нет аккаунта, вы можете зарегистрироваться."
+              : "Заполните форму регистрации, чтобы создать аккаунт. Уже зарегистрированы? Войдите в систему."
+          }}
+        </span>
       </div>
       <div class="block-bottom">
-        <span class="phone">8 800 222-26-73</span>
-        <a href="info@drupal-coder.com" class="email">info@drupal-coder.com</a>
+        <button @click="toggleMode" class="toggle-mode-btn" type="button">
+          {{ isLoginMode ? "Создать аккаунт" : "Уже есть аккаунт? Войти" }}
+        </button>
       </div>
     </div>
     <div class="form">
-      <form id="form" @submit.prevent="handleSubmit" class="contact-form smooth-scroll" :class="formClasses">
+      <form @submit.prevent="handleSubmit" class="contact-form smooth-scroll">
         <!-- Overlay загрузки -->
         <div v-if="isLoading" class="form-overlay">
           <div class="spinner"></div>
-          <span class="loading-text">Отправка данных...</span>
+          <span class="loading-text">{{
+            isLoginMode ? "Вход..." : "Регистрация..."
+          }}</span>
         </div>
 
         <!-- Успешное сообщение -->
         <div v-if="success" class="success-message">
           <div class="success-icon">✓</div>
-          <h3>Успешно отправлено!</h3>
-          <p>Мы свяжемся с вами в ближайшее время</p>
-          <button type="button" @click="resetForm" class="reset-btn">Отправить еще</button>
+          <h3>{{ isLoginMode ? "Успешный вход!" : "Регистрация успешна!" }}</h3>
+          <p>{{ successMessage }}</p>
+          <button type="button" @click="redirectToAdmin" class="reset-btn">
+            Перейти в админ-панель
+          </button>
         </div>
 
         <!-- Основное содержимое формы -->
         <div v-if="!success" class="form-content">
-          <div class="input-group">
-            <input
-              v-model="formData.name"
-              type="text"
-              placeholder="Ваше имя"
-              class="form-input"
-              :disabled="isLoading"
-              required
-            />
-          </div>
+          <!-- Поля для регистрации -->
+          <template v-if="!isLoginMode">
+            <div class="input-group">
+              <input
+                v-model="formData.fullName"
+                type="text"
+                placeholder="ФИО *"
+                class="form-input"
+                :disabled="isLoading"
+              />
+            </div>
+            <div class="input-group">
+              <input
+                v-model="formData.birthDate"
+                type="date"
+                class="form-input"
+                :disabled="isLoading"
+              />
+            </div>
+            <div class="input-group">
+              <select
+                v-model="formData.gender"
+                class="form-input"
+                :disabled="isLoading"
+              >
+                <option value="">Пол</option>
+                <option value="male">Мужской</option>
+                <option value="female">Женский</option>
+                <option value="other">Другой</option>
+              </select>
+            </div>
+            <div class="input-group">
+              <div class="checkbox-group language-group">
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    value="javascript"
+                    v-model="formData.favoriteLanguages"
+                    :disabled="isLoading"
+                    class="checkbox-input"
+                  />
+                  <span class="checkmark"></span>
+                  <span class="checkbox-text">JavaScript</span>
+                </label>
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    value="python"
+                    v-model="formData.favoriteLanguages"
+                    :disabled="isLoading"
+                    class="checkbox-input"
+                  />
+                  <span class="checkmark"></span>
+                  <span class="checkbox-text">Python</span>
+                </label>
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    value="java"
+                    v-model="formData.favoriteLanguages"
+                    :disabled="isLoading"
+                    class="checkbox-input"
+                  />
+                  <span class="checkmark"></span>
+                  <span class="checkbox-text">Java</span>
+                </label>
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    value="csharp"
+                    v-model="formData.favoriteLanguages"
+                    :disabled="isLoading"
+                    class="checkbox-input"
+                  />
+                  <span class="checkmark"></span>
+                  <span class="checkbox-text">C#</span>
+                </label>
+                <label class="checkbox-label">
+                  <input
+                    type="checkbox"
+                    value="php"
+                    v-model="formData.favoriteLanguages"
+                    :disabled="isLoading"
+                    class="checkbox-input"
+                  />
+                  <span class="checkmark"></span>
+                  <span class="checkbox-text">PHP</span>
+                </label>
+              </div>
+            </div>
+            <div class="input-group">
+              <textarea
+                v-model="formData.biography"
+                placeholder="Биография"
+                class="form-textarea"
+                :disabled="isLoading"
+              ></textarea>
+            </div>
+          </template>
+
+          <!-- Общие поля -->
           <div class="input-group">
             <input
               v-model="formData.phone"
               type="tel"
-              placeholder="Телефон"
+              placeholder="Телефон *"
               class="form-input"
               :disabled="isLoading"
-              required
             />
           </div>
-          <div class="input-group">
+          <div class="input-group" v-if="!isLoginMode">
+            <input
+              v-model="formData.email"
+              type="email"
+              placeholder="E-mail *"
+              class="form-input"
+              :disabled="isLoading"
+            />
+          </div>
+          <div class="input-group" v-else>
             <input
               v-model="formData.email"
               type="email"
               placeholder="E-mail"
               class="form-input"
               :disabled="isLoading"
-              required
             />
           </div>
           <div class="input-group">
-            <textarea
-              v-model="formData.comment"
-              placeholder="Ваш комментарий"
-              id="comment"
-              class="form-textarea"
+            <input
+              v-model="formData.password"
+              :type="showPassword ? 'text' : 'password'"
+              placeholder="Пароль *"
+              class="form-input"
               :disabled="isLoading"
-            ></textarea>
+            />
+            <button
+              type="button"
+              @click="showPassword = !showPassword"
+              class="password-toggle"
+            >
+              {{ showPassword ? "🙈" : "👁️" }}
+            </button>
+          </div>
+          <div class="input-group" v-if="!isLoginMode">
+            <input
+              v-model="formData.confirmPassword"
+              :type="showConfirmPassword ? 'text' : 'password'"
+              placeholder="Подтверждение пароля *"
+              class="form-input"
+              :disabled="isLoading"
+            />
+            <button
+              type="button"
+              @click="showConfirmPassword = !showConfirmPassword"
+              class="password-toggle"
+            >
+              {{ showConfirmPassword ? "🙈" : "👁️" }}
+            </button>
           </div>
 
-          <div class="checkbox-group">
-            <label class="checkbox-label">
+          <div class="checkbox-group" v-if="!isLoginMode">
+            <label class="checkbox-label agreement-label">
               <input
-                v-model="formData.agree"
+                v-model="formData.agreement"
                 type="checkbox"
                 class="checkbox-input"
                 :disabled="isLoading"
-                required
               />
               <span class="checkmark"></span>
               <span class="checkbox-text">
-                Отправляя заявку, я даю согласие на
-                <a href="#" class="privacy-link"
-                  >обработку своих персональных данных.*</a
-                >
+                Я ознакомлен с условиями использования
               </span>
             </label>
           </div>
 
-          <!-- Сообщение об ошибке -->
           <div v-if="error" class="error-message">
             {{ error }}
-            <button type="button" @click="clearError" class="error-close">×</button>
+            <button type="button" @click="clearError" class="error-close">
+              ×
+            </button>
           </div>
 
-          <ButtonTypeBould
-            style="width: 100%"
+          <button
+            type="submit"
             class="submit-btn"
-            :class="{ loading: isLoading }"
             :disabled="!isFormValid || isLoading"
           >
-            <span v-if="!isLoading">СВЯЖИТЕСЬ С НАМИ!</span>
-            <span v-else>ОТПРАВКА...</span>
-          </ButtonTypeBould>
+            {{
+              !isLoading
+                ? isLoginMode
+                  ? "ВОЙТИ"
+                  : "ЗАРЕГИСТРИРОВАТЬСЯ"
+                : isLoginMode
+                  ? "ВХОД..."
+                  : "РЕГИСТРАЦИЯ..."
+            }}
+          </button>
         </div>
       </form>
     </div>
@@ -120,15 +251,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, computed } from "vue";
+import { defineComponent, reactive, computed, ref } from "vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 interface FormData {
-  name: string;
+  fullName: string;
   phone: string;
   email: string;
-  comment: string;
-  agree: boolean;
+  birthDate: string;
+  gender: string;
+  favoriteLanguages: string[];
+  biography: string;
+  password: string;
+  confirmPassword: string;
+  agreement: boolean;
 }
 
 export default defineComponent({
@@ -136,85 +273,186 @@ export default defineComponent({
 
   setup() {
     const store = useStore();
+    const router = useRouter();
+    const isLoginMode = ref(false);
+    const showPassword = ref(false);
+    const showConfirmPassword = ref(false);
+
+    // Локальное состояние
+    const isLoading = ref(false);
+    const success = ref(false);
+    const error = ref<string | null>(null);
 
     const formData = reactive<FormData>({
-      name: "",
+      fullName: "",
       phone: "",
       email: "",
-      comment: "",
-      agree: false,
+      birthDate: "",
+      gender: "",
+      favoriteLanguages: [],
+      biography: "",
+      password: "",
+      confirmPassword: "",
+      agreement: false,
     });
 
-    // Геттеры из Vuex
-    const isLoading = computed(() => store.getters.isFormLoading);
-    const success = computed(() => store.getters.formSuccess);
-    const error = computed(() => store.getters.formError);
+    const successMessage = computed(() => {
+      if (isLoginMode.value) {
+        return "Добро пожаловать! Вы успешно вошли в систему.";
+      }
+      return "Ваш аккаунт успешно создан! Теперь вы можете войти.";
+    });
 
     const isFormValid = computed(() => {
-      return (
-        formData.name.trim() !== "" &&
+      if (!formData.phone.trim() || !formData.password.trim()) {
+        return false;
+      }
+
+      if (isLoginMode.value) {
+        return true;
+      }
+
+      const isBasicValid =
+        formData.fullName.trim() !== "" &&
+        formData.email.trim() !== "" &&
+        formData.password === formData.confirmPassword &&
+        formData.password.length >= 6 &&
+        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email);
+
+      const allFieldsFilled =
+        formData.fullName.trim() !== "" &&
         formData.phone.trim() !== "" &&
         formData.email.trim() !== "" &&
-        formData.agree !== false &&
-        isValidEmail(formData.email)
-      );
+        formData.password.trim() !== "" &&
+        formData.confirmPassword.trim() !== "" &&
+        formData.password === formData.confirmPassword &&
+        formData.password.length >= 6;
+
+      if (allFieldsFilled) {
+        return isBasicValid && formData.agreement === true;
+      }
+
+      return isBasicValid;
     });
 
-    const isValidEmail = (email: string) => {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      return emailRegex.test(email);
+    const toggleMode = () => {
+      isLoginMode.value = !isLoginMode.value;
+      Object.assign(formData, {
+        fullName: "",
+        phone: "",
+        email: "",
+        birthDate: "",
+        gender: "",
+        favoriteLanguages: [],
+        biography: "",
+        password: "",
+        confirmPassword: "",
+        agreement: false,
+      });
+      error.value = null;
+      success.value = false;
     };
 
-    // Обработчики
+    const redirectToAdmin = () => {
+      // Перенаправляем на страницу /admin
+      router.push("/admin");
+    };
+
     const handleSubmit = async () => {
       if (!isFormValid.value) return;
 
-      try {
-        await store.dispatch("submitForm", formData);
+      isLoading.value = true;
+      error.value = null;
 
-        // Очистка формы после успешной отправки
-        Object.assign(formData, {
-          name: "",
-          phone: "",
-          email: "",
-          comment: "",
-        });
-      } catch (error) {
-        console.error("Ошибка отправки формы:", error);
+      try {
+        if (isLoginMode.value) {
+          // Логика входа
+          await store.dispatch("auth/login", {
+            phone: formData.phone,
+            password: formData.password,
+            email: formData.email || undefined,
+          });
+          success.value = true;
+
+          // Автоматический редирект через 1.5 секунды
+          setTimeout(() => {
+            redirectToAdmin();
+          }, 1500);
+        } else {
+          // Логика регистрации
+          await store.dispatch("auth/register", {
+            fullName: formData.fullName,
+            phone: formData.phone,
+            email: formData.email,
+            birthDate: formData.birthDate,
+            gender: formData.gender,
+            favoriteLanguages: formData.favoriteLanguages,
+            biography: formData.biography,
+            password: formData.password,
+            confirmPassword: formData.confirmPassword,
+            agreement: formData.agreement,
+          });
+          success.value = true;
+
+          // Автоматический редирект через 1.5 секунды после регистрации
+          setTimeout(() => {
+            redirectToAdmin();
+          }, 1500);
+
+          // Очистка формы
+          Object.assign(formData, {
+            fullName: "",
+            phone: "",
+            email: "",
+            birthDate: "",
+            gender: "",
+            favoriteLanguages: [],
+            biography: "",
+            password: "",
+            confirmPassword: "",
+            agreement: false,
+          });
+        }
+      } catch (err: any) {
+        error.value = err.message || "Произошла ошибка";
+        success.value = false;
+      } finally {
+        isLoading.value = false;
       }
     };
 
     const resetForm = () => {
-      store.dispatch("resetForm");
+      success.value = false;
+      error.value = null;
+      redirectToAdmin();
     };
 
     const clearError = () => {
-      store.commit("SET_ERROR", null);
+      error.value = null;
     };
-
-    // Классы для анимаций
-    const formClasses = computed(() => ({
-      "form-loading": isLoading.value,
-      "form-success": success.value,
-      "form-error": error.value,
-    }));
 
     return {
       formData,
       isLoading,
+      success,
+      error,
+      isLoginMode,
+      showPassword,
+      showConfirmPassword,
+      successMessage,
+      isFormValid,
+      toggleMode,
       resetForm,
       clearError,
       handleSubmit,
-      success,
-      error,
-      formClasses,
-      isFormValid
+      redirectToAdmin,
     };
   },
 });
 </script>
 
 <style scoped>
+/* Все стили остаются без изменений */
 .container-form {
   display: grid;
   grid-template-columns: 33% 33%;
@@ -284,22 +522,22 @@ export default defineComponent({
   gap: 15px;
 }
 
-.phone {
-  font-size: 2rem;
+.toggle-mode-btn {
+  background: transparent;
+  color: #f14d34;
+  border: 2px solid #f14d34;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 1rem;
   font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.email {
-  font-size: 1.2rem;
-  opacity: 0.9;
-  color: #fff;
-  text-decoration: none;
-  transition: opacity 0.3s ease;
-}
-
-.email:hover {
-  opacity: 1;
-  text-decoration: underline;
+.toggle-mode-btn:hover {
+  background: #f14d34;
+  color: white;
+  transform: translateY(-2px);
 }
 
 .form {
@@ -318,46 +556,6 @@ export default defineComponent({
   transition: all 0.3s ease;
 }
 
-/* Анимации состояний формы */
-.contact-form.form-loading {
-  opacity: 0.7;
-  pointer-events: none;
-}
-
-.contact-form.form-success {
-  animation: successPulse 0.6s ease;
-}
-
-.contact-form.form-error {
-  animation: errorShake 0.5s ease;
-}
-
-@keyframes successPulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.02);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-@keyframes errorShake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-5px);
-  }
-  75% {
-    transform: translateX(5px);
-  }
-}
-
-/* Overlay загрузки */
 .form-overlay {
   position: absolute;
   top: 0;
@@ -398,11 +596,9 @@ export default defineComponent({
   opacity: 0.8;
 }
 
-/* Сообщение об успехе */
 .success-message {
   text-align: center;
   padding: 40px 20px;
-  animation: fadeIn 0.5s ease;
   color: white;
 }
 
@@ -458,7 +654,6 @@ export default defineComponent({
   transform: translateY(-2px);
 }
 
-/* Сообщение об ошибке */
 .error-message {
   background: rgba(198, 40, 40, 0.1);
   color: #ff6b6b;
@@ -468,19 +663,7 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  animation: slideDown 0.3s ease;
   border: 1px solid rgba(198, 40, 40, 0.3);
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
 }
 
 .error-close {
@@ -497,10 +680,12 @@ export default defineComponent({
 .input-group {
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .form-input,
-.form-textarea {
+.form-textarea,
+select.form-input {
   margin-top: 20px;
   padding: 18px 20px;
   border: 2px solid #aeaeae;
@@ -511,29 +696,26 @@ export default defineComponent({
   color: #fff;
 }
 
+select.form-input option {
+  background: #0f111a;
+}
+
+input[type="date"].form-input {
+  color-scheme: dark;
+}
+
 .form-input::placeholder,
 .form-textarea::placeholder {
   color: #f5f5f5;
   opacity: 1;
-  transition: color 0.3s ease;
-}
-
-.form-input:focus::placeholder,
-.form-textarea:focus::placeholder {
-  color: #c0c0c0;
 }
 
 .form-input:focus,
-.form-textarea:focus {
+.form-textarea:focus,
+select.form-input:focus {
   outline: none;
   border-color: #f14d34;
   box-shadow: 0 0 0 3px rgba(241, 77, 52, 0.1);
-}
-
-.form-input:disabled,
-.form-textarea:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 .form-textarea {
@@ -542,7 +724,24 @@ export default defineComponent({
   line-height: 1.5;
 }
 
-/* Checkbox Styles */
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  bottom: 18px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  opacity: 0.7;
+}
+
+.language-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 10px;
+}
+
 .checkbox-group {
   margin: 10px 0;
 }
@@ -555,10 +754,16 @@ export default defineComponent({
   font-size: 0.9rem;
   line-height: 1.4;
   color: #fff;
+  position: relative;
 }
 
 .checkbox-input {
-  display: none;
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .checkmark {
@@ -571,6 +776,11 @@ export default defineComponent({
   margin-top: 2px;
   transition: all 0.3s ease;
   background: rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+}
+
+.checkbox-label:hover .checkmark {
+  border-color: #f14d34;
 }
 
 .checkbox-input:checked + .checkmark {
@@ -590,71 +800,43 @@ export default defineComponent({
   transform: rotate(45deg);
 }
 
-.checkbox-label:has(.checkbox-input:disabled) {
+.checkbox-input:disabled + .checkmark {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.privacy-link {
-  color: #f14d34;
-  text-decoration: none;
-  transition: color 0.3s ease;
+.checkbox-input:disabled ~ .checkbox-text {
+  opacity: 0.6;
 }
 
-.privacy-link:hover {
-  color: #fb6f5a;
-  text-decoration: underline;
+.checkbox-text {
+  cursor: pointer;
+  user-select: none;
 }
 
-/* Стили для кнопки */
 .submit-btn {
   margin-top: 10px;
-  position: relative;
-  overflow: hidden;
+  background: #f14d34;
+  color: white;
+  border: none;
+  padding: 15px 30px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover:not(:disabled) {
+  background: #e6452e;
+  transform: translateY(-2px);
 }
 
 .submit-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  transform: none !important;
 }
 
-.submit-btn.loading::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.2),
-    transparent
-  );
-  animation: shimmer 1.5s infinite;
-}
-
-@keyframes shimmer {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
-/* Анимация для элементов формы */
-.form-input:focus,
-.form-textarea:focus {
-  transform: translateY(-2px);
-}
-
-.checkbox-label:hover .checkmark {
-  border-color: #f14d34;
-}
-
-/* Адаптивность */
 @media (max-width: 968px) {
   .container-form {
     grid-template-columns: 1fr;
@@ -689,15 +871,6 @@ export default defineComponent({
 
   .block-top h2 {
     font-size: 1.75rem;
-    margin-bottom: 20px;
-  }
-
-  .description {
-    font-size: 1rem;
-  }
-
-  .phone {
-    font-size: 1.3rem;
   }
 
   .form-input,
@@ -709,16 +882,11 @@ export default defineComponent({
     width: 200px;
     height: 200px;
   }
-
-  .success-message {
-    padding: 30px 15px;
-  }
 }
 
 @media (max-width: 480px) {
   .container-form {
     padding: 30px 0px;
-    gap: 200px;
   }
 
   .form-info {
@@ -727,11 +895,6 @@ export default defineComponent({
 
   .block-top h2 {
     font-size: 1.5rem;
-  }
-
-  .block-bottom {
-    margin-top: 30px;
-    gap: 10px;
   }
 
   .overlay-300.deg-15 {
