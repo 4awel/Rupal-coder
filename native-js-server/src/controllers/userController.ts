@@ -198,10 +198,10 @@ export async function handleUpdateUser(
       }
     });
 
-    delete mappedUpdate.login;
-    delete mappedUpdate.password;
-    delete mappedUpdate._id;
-    delete mappedUpdate.createdAt;
+    // delete mappedUpdate.login;
+    // delete mappedUpdate.password;
+    // delete mappedUpdate._id;
+    // delete mappedUpdate.createdAt;
 
     // Проверка email при обновлении
     if (mappedUpdate.email && mappedUpdate.email !== user.email) {

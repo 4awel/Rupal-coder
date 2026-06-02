@@ -149,7 +149,11 @@ export async function router(
   // POST /api/contact/send - отдельный эндпоинт для контактной формы
   if (method === "POST" && pathname === "/api/contact/send") {
     try {
-      const body = await parseBody(req);
+      const body = await new Promise((resolve) => {
+        let body = "";
+        req.on("data", (chunk) => (body += chunk));
+        req.on("end", () => resolve(body ? JSON.parse(body) : {}));
+      });
       console.log("Contact form submission:", body);
       sendJSON(res, 200, {
         message: "Сообщение отправлено",
